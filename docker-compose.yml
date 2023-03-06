@@ -1,0 +1,47 @@
+version: '3.9'
+services:
+  metabase-prod:
+    image: metabase/metabase:latest
+    container_name: metabase-prod
+    hostname: metabase-prod
+    volumes:
+    - /dev/urandom:/dev/random:ro
+    ports:
+      - 3000:3000
+    environment:
+      MB_DB_TYPE: mysql
+      MB_DB_DBNAME: metabase
+      MB_DB_PORT: 3306
+      MB_DB_USER_FILE: /run/secrets/db_user
+      MB_DB_PASS_FILE: /run/secrets/db_password
+      MB_DB_HOST: mariadb-metabase
+    networks:
+      - nginxproxymanager_default
+    depends_on:
+      - mariadb-metabase
+    secrets:
+      - db_password
+      - db_user
+  mariadb-metabase:
+    image: mariadb:latest
+    container_name: mariadb-metabase
+    hostname: mariadb-metabase
+    environment:
+      POSTGRES_USER_FILE: /run/secrets/db_user
+      POSTGRES_DB: metabase
+      POSTGRES_PASSWORD_FILE: /run/secrets/db_password
+    volumes:
+      - ./data/mysql:/var/lib/mysql
+    networks:
+      - nginxproxymanager_default
+    secrets:
+      - db_password
+      - db_user
+networks:
+  nginxproxymanager_default:
+    driver: bridge
+secrets:
+   db_password:
+     file: db_password.txt
+   db_user:
+     file: db_user.txt
