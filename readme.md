@@ -2,8 +2,8 @@
 
 Serverumgebung, Docker, Docker Compose...
 
-<h2> Install Docker </h2>
-
+<h2> Install Docker & Docker Compose</h2>
+<h3> Docker </h3>
 ```
 sudo apt-get update
 sudo apt install apt-transport-https curl gnupg-agent ca-certificates software-properties-common -y
@@ -18,6 +18,11 @@ sudo apt install docker-ce docker-ce-cli containerd.io -y
 ```
 sudo usermod -aG docker $USER
 newgrp docker
+```
+<h3> Docker Compose </h3>
+```
+sudo apt update
+sudo install docker-compose
 ```
 
 <h1> Setup </h1>
