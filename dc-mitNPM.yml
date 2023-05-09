@@ -1,0 +1,86 @@
+version: '3.9'
+services:
+  metabase-prod:
+    image: metabase/metabase:latest
+    ports:
+      - '3000:3000'
+    container_name: metabase-prod
+    volumes:
+    - /dev/urandom:/dev/random:ro
+    environment:
+      MB_DB_TYPE: mysql
+      MB_DB_DBNAME: metabase
+      MB_DB_PORT: 3306
+      MB_DB_USER: 'metadb_user'
+      MB_DB_PASS: /run/secrets/metadb_password
+      MB_DB_HOST: mariadb-metabase
+    networks:
+      - mb_network
+    depends_on:
+      - mariadb-metabase
+    secrets:
+      - metadb_password
+
+  mariadb-metabase:
+    image: mariadb:latest
+    container_name: mariadb-metabase
+    hostname: mariadb-metabase
+    environment:
+      MARIADB_ROOT_PASSWORD: /run/secrets/metadb_password
+      MARIADB_DATABASE: metabase
+      MARIADB_USER: 'metadb_user'
+      MARIADB_PASSWORD: /run/secrets/metadb_password
+    volumes:
+      - ./metabase-data/mysql:/var/lib/mysql
+    networks:
+      - mb_network
+    secrets:
+      - metadb_password
+
+  npm-app:
+    image: 'jc21/nginx-proxy-manager:latest'
+    ports:
+      - '80:80'
+      - '81:81'
+      - '443:443'
+    environment:
+        DB_MYSQL_HOST: "npm-db"
+        DB_MYSQL_PORT: 3306
+        DB_MYSQL_USER: 'npmdb_user'
+        DB_MYSQL_PASSWORD: /run/secrets/npmdb_password
+        DB_MYSQL_NAME: "npm"
+    volumes:
+      - ./data:/data
+      - ./letsencrypt:/etc/letsencrypt
+    networks:
+      - mb_network
+    depends_on:
+      - npm-db
+    secrets:
+      - npmdb_password
+
+  npm-db:
+    image: 'jc21/mariadb-aria:latest'
+    environment:
+      MYSQL_ROOT_PASSWORD: /run/secrets/npmdb_password
+      MYSQL_DATABASE: 'npm'
+      MYSQL_USER: 'npmdb_user'
+      MYSQL_PASSWORD: /run/secrets/npmdb_password
+    volumes:
+      - ./npm-data/mysql:/var/lib/mysql
+    networks:
+      - mb_network
+    depends_on:
+      - metabase-prod
+    secrets:
+      - npmdb_password
+
+networks:
+  mb_network:
+    driver: bridge
+
+secrets:
+  metadb_password:
+    file: ./metadb_password.txt
+  npmdb_password:
+    file: ./npmdb_password.txt
