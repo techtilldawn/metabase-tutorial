@@ -34,3 +34,6 @@ sudo install docker-compose
 
 <h1> Bonus </h1>
 - mit NPM aufsetzten.
+
+
+--- TEST
