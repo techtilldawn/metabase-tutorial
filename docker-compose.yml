@@ -3,7 +3,6 @@ services:
   metabase-prod:
     image: metabase/metabase:latest
     container_name: metabase-prod
-    hostname: metabase-prod
     volumes:
     - /dev/urandom:/dev/random:ro
     ports:
@@ -16,7 +15,7 @@ services:
       MB_DB_PASS_FILE: /run/secrets/db_password
       MB_DB_HOST: mariadb-metabase
     networks:
-      - nginxproxymanager_default
+      - mbdb_network
     depends_on:
       - mariadb-metabase
     secrets:
@@ -27,21 +26,27 @@ services:
     container_name: mariadb-metabase
     hostname: mariadb-metabase
     environment:
-      POSTGRES_USER_FILE: /run/secrets/db_user
-      POSTGRES_DB: metabase
-      POSTGRES_PASSWORD_FILE: /run/secrets/db_password
+      MARIADB_ROOT_PASSWORD: /run/secrets/db_root
+      MARIADB_DATABASE: metabase
+      MARIADB_USER: /run/secrets/db_user
+      MARIADB_PASSWORD: /run/secrets/db_password
     volumes:
       - ./data/mysql:/var/lib/mysql
+    ports:
+      - 3306:3306
     networks:
-      - nginxproxymanager_default
+      - mbdb_network
     secrets:
       - db_password
       - db_user
+      - db_root
 networks:
-  nginxproxymanager_default:
+  mbdb_network:
     driver: bridge
 secrets:
    db_password:
      file: db_password.txt
    db_user:
      file: db_user.txt
+   db_root:
+     file: db_root.txt
