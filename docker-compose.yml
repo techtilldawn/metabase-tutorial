@@ -2,51 +2,45 @@ version: '3.9'
 services:
   metabase-prod:
     image: metabase/metabase:latest
+    ports:
+      - '3000:3000'
     container_name: metabase-prod
     volumes:
     - /dev/urandom:/dev/random:ro
-    ports:
-      - 3000:3000
     environment:
       MB_DB_TYPE: mysql
       MB_DB_DBNAME: metabase
       MB_DB_PORT: 3306
-      MB_DB_USER_FILE: /run/secrets/db_user
-      MB_DB_PASS_FILE: /run/secrets/db_password
+      MB_DB_USER: 'metadb_user'
+      MB_DB_PASS: /run/secrets/metadb_password
       MB_DB_HOST: mariadb-metabase
     networks:
-      - mbdb_network
+      - mb_network
     depends_on:
       - mariadb-metabase
     secrets:
-      - db_password
-      - db_user
+      - metadb_password
+
   mariadb-metabase:
     image: mariadb:latest
     container_name: mariadb-metabase
     hostname: mariadb-metabase
     environment:
-      MARIADB_ROOT_PASSWORD: /run/secrets/db_root
+      MARIADB_ROOT_PASSWORD: /run/secrets/metadb_password
       MARIADB_DATABASE: metabase
-      MARIADB_USER: /run/secrets/db_user
-      MARIADB_PASSWORD: /run/secrets/db_password
+      MARIADB_USER: 'metadb_user'
+      MARIADB_PASSWORD: /run/secrets/metadb_password
     volumes:
-      - ./data/mysql:/var/lib/mysql
-    ports:
-      - 3306:3306
+      - ./metabase-data/mysql:/var/lib/mysql
     networks:
-      - mbdb_network
+      - mb_network
     secrets:
-      - db_password
-      - db_user
-      - db_root
+      - metadb_password
+      
 networks:
-  mbdb_network:
+  mb_network:
     driver: bridge
+
 secrets:
-   db_password:
-     file: db_password.txt
-   db_user:
-     file: db_user.txt
-   db_root:
-     file: db_root.txt
+  metadb_password:
+    file: ./metadb_password.txt
