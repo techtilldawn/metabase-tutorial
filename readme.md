@@ -27,6 +27,7 @@ sudo usermod -aG docker $USER
 ```
 newgrp docker
 ```
+(disconnect from ssh session, to activate a new session with your user in the docker group)
 
 <h3> Docker Compose </h3>
 
@@ -39,6 +40,15 @@ sudo apt install docker-compose -y
 
 <h1> Setup </h1>
 - Configs, Schritt für Schritt...
+- Create a folder
+```
+mkdir metabase
+```
+Copy the docker compose file into it (or copy the content)
+```
+touch docker-compose.yml
+```
+
 
 <h1> Bonus </h1>
 - mit NPM aufsetzten.
