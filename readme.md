@@ -46,7 +46,13 @@ mkdir metabase
 ```
 Copy the docker compose file into it (or copy the content)
 ```
-touch docker-compose.yml
+touch docker-compose.yml && touch metadb_password.txt
+```
+```
+vim docker-compose.yml
+```
+```
+vim metadb_password.txt
 ```
 
 
