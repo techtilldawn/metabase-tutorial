@@ -34,7 +34,7 @@ newgrp docker
 sudo apt update
 ```
 ```
-sudo install docker-compose
+sudo apt install docker-compose -y
 ```
 
 <h1> Setup </h1>
