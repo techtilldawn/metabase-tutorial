@@ -56,7 +56,10 @@ vim docker-compose.yml
 ```
 vim metadb_password.txt
 ```
-
+Start your container with docker compose
+```
+docker-compose up -d
+```
 
 <h1> Bonus </h1>
 - mit NPM aufsetzten.
